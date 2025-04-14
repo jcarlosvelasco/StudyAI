@@ -15,7 +15,7 @@ class LLMInfrastructure: LLMInfrastructureType {
         let url = URL(string: baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(Api.openRouterKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(ApiKeys.openRouterKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let requestBody: [String: Any] = [
@@ -53,7 +53,7 @@ class LLMInfrastructure: LLMInfrastructureType {
         let url = URL(string: baseURL)!
         var request = URLRequest(url: url)
         request.httpMethod = "POST"
-        request.setValue("Bearer \(Api.openRouterKey)", forHTTPHeaderField: "Authorization")
+        request.setValue("Bearer \(ApiKeys.openRouterKey)", forHTTPHeaderField: "Authorization")
         request.setValue("application/json", forHTTPHeaderField: "Content-Type")
         
         let requestBody: [String: Any] = [
