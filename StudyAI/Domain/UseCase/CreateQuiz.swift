@@ -1,0 +1,73 @@
+//
+//  CreateQuiz.swift
+//  StudyAI
+//
+//  Created by Juan Carlos Velasco on 3/4/25.
+//
+
+import Foundation
+
+protocol CreateQuizType {
+    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Quiz?
+}
+
+class CreateQuiz: CreateQuizType {
+    private let createQuizRepository: CreateQuizRepositoryType
+    private let readPDF: ReadPDFType
+    private let locale: String
+    
+    private let initialPrompt: String
+
+    init(
+        createQuizRepository: CreateQuizRepositoryType,
+        readPDF: ReadPDFType
+    ) {
+        self.createQuizRepository = createQuizRepository
+        self.readPDF = readPDF
+        
+        if #available(iOS 16.0, *) {
+            locale = Locale.current.language.languageCode?.identifier ?? "en"
+        } else {
+            locale = Locale.current.languageCode ?? "en"
+        }
+        
+        self.initialPrompt = #"""
+    You need to create a quiz with the following PDF content. Both the questions and answers must be in the language: \#(locale). If you don't support that language, all the questions and answers must be in English. Each quiz will have four questions, with only one correct answer. The maximum amount of questions will be 12. Make sure your response is only a JSON with this format: {
+        "quiz": {
+          "questions": [
+            {
+              "id": 1,
+              "question": "¿What is the capital of France?",
+              "options": ["Madrid", "Paris", "Roma", "Berlin"],
+              "correct_answer": "Paris"
+            }
+          ]
+        }
+      }
+    """#
+    }
+    
+    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Quiz? {
+        let contents = await withTaskGroup(of: String?.self) { group -> [String] in
+            for documentURL in documentURLs {
+                group.addTask {
+                    await self.readPDF.execute(documentURL: documentURL)
+                }
+            }
+            
+            var results: [String] = []
+            for await content in group {
+                if let content = content {
+                    results.append(content)
+                }
+            }
+            
+            return results
+        }
+
+        let totalContent = initialPrompt + contents.joined()
+        let quiz = await createQuizRepository.createQuiz(text: totalContent, name: name, subjectID: subjectID)
+        print("Create quiz, Created quiz")
+        return quiz
+     }
+}
