@@ -26,7 +26,7 @@ class QuizViewModel: ObservableObject {
         quiz: Quiz?,
         updateQuiz: UpdateQuizOnCompletionType = Container.shared.updateQuizOnCompletion()
     ) {
-        print("QuizViewModel, Init")
+        Logger.log(.info, "Init")
         self.quiz = quiz
         self.updateQuiz = updateQuiz
     }

@@ -81,7 +81,7 @@ struct SubjectDetailView: View {
                         }
                         
                     case .failure(let error):
-                        print(error)
+                        Logger.log(.error, error.localizedDescription)
                     }
                 }
             )
@@ -122,7 +122,7 @@ struct SubjectDetailView: View {
             }
             .onAppear {
                 Task {
-                    await viewModel.fetchQuizes()
+                    await viewModel.fetchQuizzes()
                 }
             }
         }

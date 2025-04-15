@@ -14,7 +14,7 @@ class GetSubjects: GetSubjectsType {
     private var getSubjectsRepo: GetSubjectsRepositoryType
     
     init(getSubjectsRepo: GetSubjectsRepositoryType) {
-        print("Get subjects init")
+        Logger.log(.info, "Init")
         self.getSubjectsRepo = getSubjectsRepo
     }
     

@@ -56,7 +56,7 @@ class SubjectDetailViewModel: ObservableObject {
         quizPresentableErrorMapper: QuizPresentableErrorMapper = Container.shared.quizPresentableErrorMapper(),
         subjectPresentableErrorMapper: SubjectPresentableErrorMapper = Container.shared.subjectPresentableErrorMapper()
     ) {
-        print("SubjectDetailViewModel, init")
+        Logger.log(.info, "Init")
         self.subject = subject
         self.addDocumentsToSubject = addDocumentsToSubject
         self.getSubject = getSubject
@@ -77,12 +77,12 @@ class SubjectDetailViewModel: ObservableObject {
     }
     
     deinit {
-        print("SubjectDetailViewModel, deinit")
+        Logger.log(.info, "deinit")
     }
     
-    func fetchQuizes() async {
-        print("SubjectDetailViewModel, Fetch Quizzes")
-        
+    func fetchQuizzes() async {
+        Logger.log(.info, "Fetch quizzes")
+
         let fetchedQuizes = await getQuizes.execute(subjectID: subject.id)
         DispatchQueue.main.async {
             self.quizes = fetchedQuizes
@@ -97,7 +97,7 @@ class SubjectDetailViewModel: ObservableObject {
             return
         }
         
-        print("SubjectDetailViewModel, Fetch Quizzes, updated subject: \(updatedSubject.lastAIScoreUpdate?.description ?? "nil")")
+        Logger.log(.info, "Fetch Quizzes, updated subject: \(updatedSubject.lastAIScoreUpdate?.description ?? "nil")")
         
         DispatchQueue.main.async {
             self.score = updatedSubject.score
@@ -105,7 +105,7 @@ class SubjectDetailViewModel: ObservableObject {
         }
         
         if updatedSubject.lastAIScoreUpdate == nil {
-            print("SubjectDetailViewModel, Last AI Score update is nil, calculating score...")
+            Logger.log(.info, "SubjectDetailViewModel, Last AI Score update is nil, calculating score...")
             self.score = 0
         }
         else {
@@ -117,13 +117,15 @@ class SubjectDetailViewModel: ObservableObject {
                     }
                 }
                 else {
-                    print("Nil date")
+                    Logger.log(.info, "Nil date")
                 }
             }
-            print("Quiz last done date: \(biggestDate.description)")
-            print("FetchQuizzes date: \(updatedSubject.lastAIScoreUpdate!.description)")
+            
+            Logger.log(.info, "Quiz last done date: \(biggestDate.description)")
+            Logger.log(.info, "FetchQuizzes date: \(updatedSubject.lastAIScoreUpdate!.description)")
+
             if Int(updatedSubject.lastAIScoreUpdate!.timeIntervalSince1970) < Int(biggestDate.timeIntervalSince1970) {
-                print("Subject last ai score update bigger than biggest date, calculating score...")
+                Logger.log(.info, "Subject last ai score update bigger than biggest date, calculating score...")
                 await calculateScore(quizzes: fetchedQuizes)
             }
         }
@@ -208,7 +210,7 @@ class SubjectDetailViewModel: ObservableObject {
     }
     
     func calculateScore(quizzes: [Quiz]) async {
-        print("Calculate score")
+        Logger.log(.info, "Calculate score")
         
         DispatchQueue.main.async {
             self.score = 0
@@ -217,19 +219,18 @@ class SubjectDetailViewModel: ObservableObject {
         
         var totalQuestions = 0
         for quiz in quizzes {
-            print("Quiz")
             for _ in quiz.questions {
                 totalQuestions += 1
             }
         }
-        print("Total questions: \(totalQuestions)")
+
         guard totalQuestions > 0 else {
             return
         }
         
         let totalScore = quizzes.reduce(0) { $0 + $1.highestScore }
         let score = (totalScore * 100) / totalQuestions
-        print("Result: \(score)")
+        Logger.log(.info, "Result: \(score)")
         
         if quizzes.isEmpty {
             return

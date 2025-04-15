@@ -15,18 +15,17 @@ actor DatabaseActor {
         do {
             return try modelContext.fetch(descriptor)
         } catch {
-            print("Error fetching subjects: \(error)")
+            Logger.log(.error, "Error fetching subjects: \(error)")
             return []
         }
     }
     
     func addSubject(subject: SubjectEntity) {
-        print("Creating subject...")
         modelContext.insert(subject)
         do {
             try save()
         } catch {
-            print("Error saving subject: \(error)")
+            Logger.log(.error, "Error saving subject: \(error)")
         }
     }
     
@@ -39,7 +38,8 @@ actor DatabaseActor {
         do {
             return try modelContext.fetch(descriptor).first
         } catch {
-            fatalError("Error fetching subject: \(error)")
+            Logger.log(.error, "Error fetching subject: \(error)")
+            return nil
         }
     }
     
@@ -52,7 +52,8 @@ actor DatabaseActor {
         do {
             return try modelContext.fetch(descriptor).first
         } catch {
-            fatalError("Error fetching quiz: \(error)")
+            Logger.log(.error, "Error fetching quiz: \(error)")
+            return nil
         }
     }
     
@@ -70,7 +71,7 @@ actor DatabaseActor {
                 try save()
             }
             catch {
-                print("Error saving document: \(error)")
+                Logger.log(.error, "Error saving document: \(error)")
             }
         }
     }
@@ -89,7 +90,7 @@ actor DatabaseActor {
             }
             try save()
         } catch {
-            print("Error deleting subject: \(error)")
+            Logger.log(.error, "Error deleting subject: \(error)")
         }
     }
     
@@ -101,7 +102,7 @@ actor DatabaseActor {
                 try save()
             }
         } catch {
-            print("Error deleting document: \(error)")
+            Logger.log(.error, "Error deleting document: \(error)")
         }
     }
     
@@ -110,7 +111,7 @@ actor DatabaseActor {
         do {
             try save()
         } catch {
-            print("Error saving subject: \(error)")
+            Logger.log(.error, "Error saving quiz: \(error)")
         }
     }
     
@@ -123,7 +124,7 @@ actor DatabaseActor {
         do {
             return try modelContext.fetch(descriptor)
         } catch {
-            print("Error fetching subjects: \(error)")
+            Logger.log(.error, "Error fetching quizzes: \(error)")
             return []
         }
     }
@@ -136,30 +137,30 @@ actor DatabaseActor {
                 try save()
             }
         } catch {
-            print("Error deleting quiz: \(error)")
+            Logger.log(.error, "Error deleting quiz: \(error)")
         }
     }
     
     func updateQuizOnCompletion(quizID: UUID, highScore: Int) async {
         do {
             guard let quiz = await getQuizFromQuizID(quizID: quizID) else {
-                print("Quiz with ID \(quizID) not found.")
+                Logger.log(.warning, "Quiz with ID \(quizID) not found.")
                 return
             }
             
             quiz.highestScore = highScore
             quiz.lastTimeCompleted = Date()
             try save()
-            print("Quiz updated")
+            Logger.log(.info, "Updated quiz")
         } catch {
-            print("Error updating quiz: \(error.localizedDescription)")
+            Logger.log(.error, "Error updating quiz: \(error.localizedDescription)")
         }
     }
     
     func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async {
         do {
             guard let subject = await getSubjectFromSubjectID(subjectID: subjectID) else {
-                print("Subject with ID \(subjectID) not found.")
+                Logger.log(.warning, "Subject with ID \(subjectID) not found.")
                 return
             }
             
@@ -168,9 +169,9 @@ actor DatabaseActor {
             subject.score = score
             subject.scoreText = scoreText
             try save()
-            print("Updated subject score with new Date: \(date.description)")
+            Logger.log(.info, "Updated subject score with new Date: \(date.description)")
         } catch {
-            print("Error updating subject: \(error.localizedDescription)")
+            Logger.log(.error, "Error updating subject: \(error.localizedDescription)")
         }
     }
     

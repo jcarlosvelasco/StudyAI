@@ -33,7 +33,7 @@ class SubjectRepository:
         apiDataSource: APIDataSourceType,
         errorMapper: SubjectDomainErrorMapper
     ) {
-        print("Subject Repository, Init")
+        Logger.log(.info, "Init")
         self.database = database
         self.subjectEntityMapper = subjectEntityMapper
         self.subjectMapper = subjectMapper

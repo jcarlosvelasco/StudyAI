@@ -56,9 +56,7 @@ class QuizRepository:
         await database.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
     }
     
-    func createQuiz(text: String, name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {
-        print("LLM Repository, createQuiz")
-        
+    func createQuiz(text: String, name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {        
         let result = await apiDataSource.sendMessageToLLM(text: text)
         guard case .success(let response) = result else {
             guard case .failure(let error) = result else {

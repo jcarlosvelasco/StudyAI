@@ -23,7 +23,7 @@ class SubjectsViewModel: ObservableObject {
         addSubject: AddSubjectType = Container.shared.getAddSubject(),
         deleteSubject: DeleteSubjectType = Container.shared.deleteSubject()
     ) {
-        print("SubjectsViewModel, init")
+        Logger.log(.info, "Init")
         self.getSubjects = getSubjects
         self.addSubject = addSubject
         self.deleteSubject = deleteSubject

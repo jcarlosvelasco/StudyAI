@@ -41,7 +41,6 @@ class GetAIScore: GetAIScoreTextType {
         let fullPrompt = #"""
             I have the following quizzes: \#(quizzes). Based on the correct options, i have a score of \#(score) out of 100. Based on the questions and on my score, could you give me a text (2 sentences max) that sums up the score and helps me improve my score by focusing on the parts I need to improve? Your answer must be in the language: \#(locale). If you don't support that language, fallback to English. Please only provide the answer.
             """#
-        print(fullPrompt)
         return await getAIScoreTextRepo.getAIScore(text: fullPrompt)
     }
 }

@@ -20,7 +20,7 @@ class APIResponseMapper {
     
     func mapToQuiz(response: APIResponse, name: String, subjectID: UUID) -> Quiz? {
         guard let answer = response.choices.first?.message.content else {
-            print("No content found in the response.")
+            Logger.log(.info, "No content found in the response.")
             return nil
         }
         
@@ -29,7 +29,6 @@ class APIResponseMapper {
             .replacingOccurrences(of: "```", with: "")
             .trimmingCharacters(in: .whitespacesAndNewlines)
         
-        print(cleanedAnswer)
         let quizResponse: QuizResponse
                 
         do {
@@ -41,11 +40,11 @@ class APIResponseMapper {
                 let quiz = quizDTOMapper.mapQuizDTOToQuiz(dto: quizDTO, name: name, subjectID: subjectID)
                 return quiz
             } else {
-                print("Error al convertir el string a Data.")
+                Logger.log(.error, "Error al convertir el string a Data.")
                 return nil
             }
         } catch {
-            print("Error al decodificar el JSON: \(error.localizedDescription)")
+            Logger.log(.error, "Error al decodificar el JSON: \(error.localizedDescription)")
             return nil
         }
     }
