@@ -80,9 +80,12 @@ extension Container {
         .singleton
     }
     
-    private var llmRepository: Factory<LLMRepository> {
+    private var quizRepository: Factory<QuizRepository> {
         self {
-            LLMRepository(
+            QuizRepository(
+                quizMapper: Container.shared.quizMapper(),
+                database: Container.shared.getDatabase(),
+                quizEntityMapper: Container.shared.quizEntityMapper(),
                 mapper: Container.shared.apiResponseMapper(),
                 apiDataSource: Container.shared.apiDataSource(),
                 errorMapper: Container.shared.quizDomainErrorMapper()
@@ -93,18 +96,7 @@ extension Container {
     
     var createQuizRepositoryType: Factory<CreateQuizRepositoryType> {
         self {
-            self.llmRepository()
-        }
-        .singleton
-    }
-    
-    private var quizRepository: Factory<QuizRepository> {
-        self {
-            QuizRepository(
-                quizMapper: Container.shared.quizMapper(),
-                database: Container.shared.getDatabase(),
-                quizEntityMapper: Container.shared.quizEntityMapper()
-            )
+            self.quizRepository()
         }
         .singleton
     }
