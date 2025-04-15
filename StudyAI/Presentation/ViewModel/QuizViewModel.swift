@@ -7,6 +7,7 @@
 
 import Foundation
 import Factory
+import UIKit
 
 class QuizViewModel: ObservableObject {
     let quiz: Quiz?
@@ -17,6 +18,7 @@ class QuizViewModel: ObservableObject {
     @Published var showScore: Bool = false
     @Published var showingAlert: Bool = false
     @Published var showNewHighScoreText: Bool = false
+    @Published var orientation = UIDevice.current.orientation
     
     private let updateQuiz: UpdateQuizOnCompletionType
     

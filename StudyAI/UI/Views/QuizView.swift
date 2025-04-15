@@ -140,6 +140,15 @@ struct QuizView: View {
             }
         }
         .navigationBarHidden(true)
+        .onAppear {
+            if let scene = UIApplication.shared.connectedScenes.first,
+               let sceneDelegate = scene as? UIWindowScene,
+               sceneDelegate.interfaceOrientation.isPortrait {
+                viewModel.orientation = .portrait
+            } else {
+                viewModel.orientation = .landscapeLeft
+            }
+        }
     }
 }
 
