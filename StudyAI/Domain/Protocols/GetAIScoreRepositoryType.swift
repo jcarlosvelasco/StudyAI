@@ -6,5 +6,5 @@
 //
 
 protocol GetAIScoreRepositoryType {
-    func getAIScore(text: String) async -> String?
+    func getAIScore(text: String) async -> Result<String, SubjectDomainError>
 }

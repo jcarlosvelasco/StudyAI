@@ -22,9 +22,26 @@ extension Container {
         .singleton
     }
     
-    var llm: Factory<LLMInfrastructureType> {
+    var urlSessionHTTPClient: Factory<HTTPClient> {
         self {
-            LLMInfrastructure()
+            URLSessionHTTPClient(
+                requestMaker: Container.shared.urlSessionRequestMaker(),
+                errorResolver: Container.shared.urlSessionErrorResolver()
+            )
+        }
+        .singleton
+    }
+    
+    var urlSessionRequestMaker: Factory<URLSessionRequestMaker> {
+        self {
+            URLSessionRequestMaker()
+        }
+        .singleton
+    }
+    
+    var urlSessionErrorResolver: Factory<URLSessionErrorResolver> {
+        self {
+            URLSessionErrorResolver()
         }
         .singleton
     }

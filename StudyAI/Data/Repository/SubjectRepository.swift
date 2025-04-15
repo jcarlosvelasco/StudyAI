@@ -20,19 +20,26 @@ class SubjectRepository:
     private let database: DatabaseInfrastructureType
     private let subjectEntityMapper: SubjectEntityMapper
     private let subjectMapper: SubjectMapper
-    private let llm: LLMInfrastructureType
+    
+    private let mapper: APIResponseMapper
+    private let apiDataSource: APIDataSourceType
+    private let errorMapper: SubjectDomainErrorMapper
     
     init(
         database: DatabaseInfrastructureType,
         subjectEntityMapper: SubjectEntityMapper,
         subjectMapper: SubjectMapper,
-        llm: LLMInfrastructureType
+        mapper: APIResponseMapper,
+        apiDataSource: APIDataSourceType,
+        errorMapper: SubjectDomainErrorMapper
     ) {
         print("Subject Repository, Init")
         self.database = database
         self.subjectEntityMapper = subjectEntityMapper
         self.subjectMapper = subjectMapper
-        self.llm = llm
+        self.mapper = mapper
+        self.apiDataSource = apiDataSource
+        self.errorMapper = errorMapper
     }
     
     func getSubjectsFromDB() async -> [Subject] {
@@ -72,8 +79,21 @@ class SubjectRepository:
         await database.updateSubject(subjectID: subjectID, score: score, scoreText: scoreText)
     }
     
-    func getAIScore(text: String) async -> String? {
-        let response = await llm.sendText(text: text)
-        return response?.choices.first?.message.content
+    func getAIScore(text: String) async -> Result<String, SubjectDomainError> {
+        let result = await apiDataSource.sendMessageToLLM(text: text)
+        guard case .success(let response) = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+
+        let answer = mapper.mapToLLMAnswer(response: response)
+        
+        guard let answer = answer else {
+            return .failure(.generic)
+        }
+        
+        return .success(answer)
     }
 }

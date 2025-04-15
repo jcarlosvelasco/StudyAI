@@ -165,19 +165,23 @@ class SubjectDetailViewModel: ObservableObject {
         DispatchQueue.main.async {
             self.isLoading.toggle()
         }
-        if let createdQuiz = await createQuiz.execute(documentURLs: self.selectedFiles, name: newQuizName, subjectID: subject.id) {
-            self.quiz = createdQuiz
-            await storeQuiz.execute(quiz: createdQuiz)
-            
-            DispatchQueue.main.async {
-                self.isLoading.toggle()
-                self.shouldNavigateToQuiz = true
+        
+        let createQuizResult = await createQuiz.execute(documentURLs: self.selectedFiles, name: newQuizName, subjectID: subject.id)
+        guard case .success(let createdQuiz) = createQuizResult else {
+            guard case .failure(let failure) = createQuizResult else {
+                return
             }
-        } else {
-            DispatchQueue.main.async {
-                self.isLoading.toggle()
-            }
-            print("Error: No se pudo crear el quiz")
+            print("Error: \(failure)")
+            self.isLoading.toggle()
+            return
+        }
+        
+        self.quiz = createdQuiz
+        await storeQuiz.execute(quiz: createdQuiz)
+        
+        DispatchQueue.main.async {
+            self.isLoading.toggle()
+            self.shouldNavigateToQuiz = true
         }
     }
     
@@ -212,17 +216,30 @@ class SubjectDetailViewModel: ObservableObject {
         }
 
         let totalScore = quizzes.reduce(0) { $0 + $1.highestScore }
-        let result = (totalScore * 100) / totalQuestions
-        print("Result: \(result)")
-        let text = await getAIScore.execute(score: result, quizzes: quizes)
+        let score = (totalScore * 100) / totalQuestions
+        print("Result: \(score)")
         
+        if quizzes.isEmpty {
+            return
+        }
+        
+        let result = await getAIScore.execute(score: score, quizzes: quizes)
+        guard case .success(let text) = result else {
+            guard case .failure(let error) = result else {
+                return
+            }
+            print("Error: \(error)")
+            self.isLoading.toggle()
+            return
+        }
+
         DispatchQueue.main.async {
-            self.score = result
+            self.score = score
             self.scoreText = text
         }
         
         Task {
-            await updateSubject.execute(subjectID: subject.id, score: result, scoreText: text)
+            await updateSubject.execute(subjectID: subject.id, score: score, scoreText: text)
         }
     }
 }

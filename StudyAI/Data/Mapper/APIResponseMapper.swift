@@ -14,7 +14,11 @@ class APIResponseMapper {
         self.quizDTOMapper = quizDTOMapper
     }
     
-    func mapAPIResponseToQuiz(response: APIResponse, name: String, subjectID: UUID) -> Quiz? {
+    func mapToLLMAnswer(response: APIResponse) -> String? {
+        return response.choices.first?.message.content
+    }
+    
+    func mapToQuiz(response: APIResponse, name: String, subjectID: UUID) -> Quiz? {
         guard let answer = response.choices.first?.message.content else {
             print("No content found in the response.")
             return nil

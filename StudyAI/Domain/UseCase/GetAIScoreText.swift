@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GetAIScoreTextType {
-    func execute(score: Int, quizzes: [Quiz]) async -> String?
+    func execute(score: Int, quizzes: [Quiz]) async -> Result<String, SubjectDomainError>
 }
 
 class GetAIScore: GetAIScoreTextType {
@@ -24,13 +24,7 @@ class GetAIScore: GetAIScoreTextType {
         }
     }
     
-    func execute(score: Int, quizzes: [Quiz]) async -> String? {
-        if quizzes.isEmpty {
-            return nil
-        }
-        
-        print("Get AI Score Text")
-        
+    func execute(score: Int, quizzes: [Quiz]) async -> Result<String, SubjectDomainError> {        
         var text = ""
         for quiz in quizzes {
             text += "\n\nQuiz \(quiz.id): "

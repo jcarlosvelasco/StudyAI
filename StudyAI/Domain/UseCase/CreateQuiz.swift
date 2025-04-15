@@ -8,7 +8,7 @@
 import Foundation
 
 protocol CreateQuizType {
-    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Quiz?
+    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError>
 }
 
 class CreateQuiz: CreateQuizType {
@@ -47,7 +47,7 @@ class CreateQuiz: CreateQuizType {
     """#
     }
     
-    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Quiz? {
+    func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {
         let contents = await withTaskGroup(of: String?.self) { group -> [String] in
             for documentURL in documentURLs {
                 group.addTask {
@@ -66,8 +66,7 @@ class CreateQuiz: CreateQuizType {
         }
 
         let totalContent = initialPrompt + contents.joined()
-        let quiz = await createQuizRepository.createQuiz(text: totalContent, name: name, subjectID: subjectID)
-        print("Create quiz, Created quiz")
-        return quiz
+        let result = await createQuizRepository.createQuiz(text: totalContent, name: name, subjectID: subjectID)
+        return result
      }
 }

@@ -14,7 +14,9 @@ extension Container {
                 database: Container.shared.getDatabase(),
                 subjectEntityMapper: Container.shared.getSubjectEntityMapper(),
                 subjectMapper: Container.shared.getSubjectMapper(),
-                llm: Container.shared.llm()
+                mapper: Container.shared.apiResponseMapper(),
+                apiDataSource: Container.shared.apiDataSource(),
+                errorMapper: Container.shared.subjectDomainErrorMapper()
             )
         }
         .singleton
@@ -81,8 +83,9 @@ extension Container {
     private var llmRepository: Factory<LLMRepository> {
         self {
             LLMRepository(
-                llm: Container.shared.llm(),
-                mapper: Container.shared.apiResponseMapper()
+                mapper: Container.shared.apiResponseMapper(),
+                apiDataSource: Container.shared.apiDataSource(),
+                errorMapper: Container.shared.quizDomainErrorMapper()
             )
         }
         .singleton

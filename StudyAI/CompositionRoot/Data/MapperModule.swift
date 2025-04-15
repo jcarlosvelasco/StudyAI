@@ -49,4 +49,18 @@ extension Container {
         }
         .singleton
     }
+    
+    var subjectDomainErrorMapper: Factory<SubjectDomainErrorMapper> {
+        self {
+            SubjectDomainErrorMapper()
+        }
+        .singleton
+    }
+    
+    var quizDomainErrorMapper: Factory<QuizDomainErrorMapper> {
+        self {
+            QuizDomainErrorMapper()
+        }
+        .singleton
+    }
 }
