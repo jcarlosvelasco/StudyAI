@@ -1,5 +1,10 @@
 # StudyAI
 
+## Screenshots
+
+<img src="Assets/Screenshot 1.png" alt="App screenshot" width="200"/>
+<img src="Assets/Screenshot 2.png" alt="App screenshot" width="200"/>
+
 ## Description
 
 **StudyAI** is an iOS application that leverages artificial intelligence to help students generate study quizzes from PDF documents. The app allows you to create subjects, upload documents, and generate personalized quizzes based on the study material.
