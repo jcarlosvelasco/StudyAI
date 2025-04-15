@@ -23,6 +23,7 @@ class SubjectDetailViewModel: ObservableObject {
     @Published var isLoading: Bool = false
     @Published var score: Int = 0
     @Published var scoreText: String?
+    @Published var showErrorAlert: Bool = false
     
     private let addDocumentsToSubject: AddDocumentsToSubjectType
     private let getSubject: GetSubjectType
@@ -34,8 +35,11 @@ class SubjectDetailViewModel: ObservableObject {
     private let deleteQuiz: DeleteQuizType
     private let updateSubject: UpdateSubjectType
     private let getAIScore: GetAIScoreTextType
+    private let quizPresentableErrorMapper: QuizPresentableErrorMapper
+    private let subjectPresentableErrorMapper: SubjectPresentableErrorMapper
     
     var quiz: Quiz?
+    var errorMessage: String = ""
     
     init(
         subject: Subject,
@@ -48,7 +52,9 @@ class SubjectDetailViewModel: ObservableObject {
         storeQuiz: StoreQuizType = Container.shared.storeQuiz(),
         deleteQuiz: DeleteQuizType = Container.shared.deleteQuiz(),
         updateSubject: UpdateSubjectType = Container.shared.updateSubject(),
-        getAIScore: GetAIScoreTextType = Container.shared.getAIScoreText()
+        getAIScore: GetAIScoreTextType = Container.shared.getAIScoreText(),
+        quizPresentableErrorMapper: QuizPresentableErrorMapper = Container.shared.quizPresentableErrorMapper(),
+        subjectPresentableErrorMapper: SubjectPresentableErrorMapper = Container.shared.subjectPresentableErrorMapper()
     ) {
         print("SubjectDetailViewModel, init")
         self.subject = subject
@@ -62,6 +68,8 @@ class SubjectDetailViewModel: ObservableObject {
         self.deleteQuiz = deleteQuiz
         self.updateSubject = updateSubject
         self.getAIScore = getAIScore
+        self.quizPresentableErrorMapper = quizPresentableErrorMapper
+        self.subjectPresentableErrorMapper = subjectPresentableErrorMapper
         
         Task {
             await getDocuments(subjectID: subject.id)
@@ -74,7 +82,7 @@ class SubjectDetailViewModel: ObservableObject {
     
     func fetchQuizes() async {
         print("SubjectDetailViewModel, Fetch Quizzes")
-
+        
         let fetchedQuizes = await getQuizes.execute(subjectID: subject.id)
         DispatchQueue.main.async {
             self.quizes = fetchedQuizes
@@ -83,19 +91,19 @@ class SubjectDetailViewModel: ObservableObject {
         if fetchedQuizes.isEmpty {
             return
         }
-
+        
         let updatedSubject = await getSubject.execute(subjectID: subject.id)
         guard let updatedSubject else {
             return
         }
-
+        
         print("SubjectDetailViewModel, Fetch Quizzes, updated subject: \(updatedSubject.lastAIScoreUpdate?.description ?? "nil")")
         
         DispatchQueue.main.async {
             self.score = updatedSubject.score
             self.scoreText = updatedSubject.scoreText
         }
-                
+        
         if updatedSubject.lastAIScoreUpdate == nil {
             print("SubjectDetailViewModel, Last AI Score update is nil, calculating score...")
             self.score = 0
@@ -166,13 +174,17 @@ class SubjectDetailViewModel: ObservableObject {
             self.isLoading.toggle()
         }
         
-        let createQuizResult = await createQuiz.execute(documentURLs: self.selectedFiles, name: newQuizName, subjectID: subject.id)
-        guard case .success(let createdQuiz) = createQuizResult else {
-            guard case .failure(let failure) = createQuizResult else {
-                return
+        let result = await createQuiz.execute(documentURLs: self.selectedFiles, name: newQuizName, subjectID: subject.id)
+        guard case .success(let createdQuiz) = result else {
+            if case .failure(let error) = result {
+                handleQuizError(error: error)
+            } else {
+                handleQuizError(error: nil)
             }
-            print("Error: \(failure)")
-            self.isLoading.toggle()
+            
+            DispatchQueue.main.async {
+                self.isLoading.toggle()
+            }
             return
         }
         
@@ -202,7 +214,7 @@ class SubjectDetailViewModel: ObservableObject {
             self.score = 0
             self.scoreText = nil
         }
-                
+        
         var totalQuestions = 0
         for quiz in quizzes {
             print("Quiz")
@@ -214,7 +226,7 @@ class SubjectDetailViewModel: ObservableObject {
         guard totalQuestions > 0 else {
             return
         }
-
+        
         let totalScore = quizzes.reduce(0) { $0 + $1.highestScore }
         let score = (totalScore * 100) / totalQuestions
         print("Result: \(score)")
@@ -225,14 +237,15 @@ class SubjectDetailViewModel: ObservableObject {
         
         let result = await getAIScore.execute(score: score, quizzes: quizes)
         guard case .success(let text) = result else {
-            guard case .failure(let error) = result else {
-                return
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
             }
-            print("Error: \(error)")
             self.isLoading.toggle()
             return
         }
-
+        
         DispatchQueue.main.async {
             self.score = score
             self.scoreText = text
@@ -240,6 +253,20 @@ class SubjectDetailViewModel: ObservableObject {
         
         Task {
             await updateSubject.execute(subjectID: subject.id, score: score, scoreText: text)
+        }
+    }
+    
+    private func handleQuizError(error: QuizDomainError?) {
+        errorMessage = quizPresentableErrorMapper.map(error: error)
+        DispatchQueue.main.async {
+            self.showErrorAlert.toggle()
+        }
+    }
+    
+    private func handleSubjectError(error: SubjectDomainError?) {
+        errorMessage = subjectPresentableErrorMapper.map(error: error)
+        DispatchQueue.main.async {
+            self.showErrorAlert.toggle()
         }
     }
 }

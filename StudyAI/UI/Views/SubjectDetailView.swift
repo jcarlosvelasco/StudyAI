@@ -114,6 +114,12 @@ struct SubjectDetailView: View {
                 )
                 .toolbar(.hidden, for: .tabBar)
             }
+            .alert(viewModel.errorMessage, isPresented: $viewModel.showErrorAlert) {
+                Button("OK", role: .cancel) {
+                    viewModel.errorMessage = ""
+                    viewModel.showErrorAlert.toggle()
+                }
+            }
             .onAppear {
                 Task {
                     await viewModel.fetchQuizes()
