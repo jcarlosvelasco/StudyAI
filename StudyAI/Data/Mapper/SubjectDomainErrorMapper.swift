@@ -7,6 +7,11 @@
 
 class SubjectDomainErrorMapper {
     func map(error: HTTPClientError?) -> SubjectDomainError {
-        return .generic
+        switch error {
+            case .tooManyRequests:
+                return .tooManyRequests
+            default:
+                return .generic
+        }
     }
 }

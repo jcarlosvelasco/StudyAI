@@ -7,4 +7,5 @@
 
 enum QuizDomainError: Error {
     case generic
+    case tooManyRequests
 }

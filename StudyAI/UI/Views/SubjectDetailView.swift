@@ -32,7 +32,7 @@ struct SubjectDetailView: View {
                         }
 
                         if !viewModel.filePaths.isEmpty {
-                            Section(header: Text("Archivos (\(viewModel.filePaths.count))")) {
+                            Section(header: Text("Files (\(viewModel.filePaths.count))")) {
                                 ForEach(viewModel.filePaths, id: \.self) { filePath in
                                     Text(filePath.shortDisplayPath(keepLastComponents: 2))
                                         .contextMenu {

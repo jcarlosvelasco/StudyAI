@@ -31,9 +31,6 @@
         }
       }
     },
-    "Archivos (%lld)" : {
-
-    },
     "Are you sure you wanna exit the quiz?" : {
       "localizations" : {
         "es" : {
@@ -143,6 +140,16 @@
           "stringUnit" : {
             "state" : "translated",
             "value" : "Salir"
+          }
+        }
+      }
+    },
+    "Files (%lld)" : {
+      "localizations" : {
+        "es" : {
+          "stringUnit" : {
+            "state" : "translated",
+            "value" : "Archivos (%lld)"
           }
         }
       }

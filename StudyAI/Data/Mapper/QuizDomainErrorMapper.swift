@@ -7,6 +7,11 @@
 
 class QuizDomainErrorMapper {
     func map(error: HTTPClientError?) -> QuizDomainError {
-        return .generic
+        switch error {
+            case .tooManyRequests:
+                return .tooManyRequests
+            default:
+                return .generic
+        }
     }
 }

@@ -14,6 +14,8 @@ class SubjectPresentableErrorMapper {
         switch error {
             case .generic:
                 return "Something went wrong"
+            case .tooManyRequests:
+                return "Too many requests. Please try again later."
         }
     }
 }
