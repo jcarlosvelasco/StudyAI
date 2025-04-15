@@ -3,8 +3,8 @@
 ## Screenshots
 
 <p align="left">
-  <img src="Assets/Screenshot 1.png" alt="Screenshot 1" width="45%" />
-  <img src="Assets/Screenshot 2.png" alt="Screenshot 2" width="45%" />
+  <img src="Assets/Screenshot 1.png" alt="Screenshot 1" width="200" />
+  <img src="Assets/Screenshot 2.png" alt="Screenshot 2" width="200" />
 </p>
 
 ## Description
