@@ -106,7 +106,9 @@ class SubjectDetailViewModel: ObservableObject {
         
         if updatedSubject.lastAIScoreUpdate == nil {
             Logger.log(.info, "SubjectDetailViewModel, Last AI Score update is nil, calculating score...")
-            self.score = 0
+            DispatchQueue.main.async {
+                self.score = 0
+            }
         }
         else {
             var biggestDate: Date = Date.distantPast
