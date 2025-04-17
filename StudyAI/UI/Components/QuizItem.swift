@@ -20,9 +20,15 @@ struct QuizItem: View {
     }
     
     var body: some View {
-        VStack(alignment: .leading) {
-            Text(quiz.name).bold()
-            Text("Highest score: \(quiz.highestScore) / \(quiz.questions.count)").foregroundStyle(.secondary)
+        HStack() {
+            VStack(alignment: .leading) {
+                Text(quiz.name).bold()
+                Text("Highest score: \(quiz.highestScore) / \(quiz.questions.count)").foregroundStyle(.secondary)
+            }
+            Spacer()
+            if quiz.highestScore == quiz.questions.count {
+                Text("🏆")
+            }
         }
         .contextMenu {
             Button(role: .destructive) {
