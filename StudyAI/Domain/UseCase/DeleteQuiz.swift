@@ -8,7 +8,7 @@
 import Foundation
 
 protocol DeleteQuizType {
-    func execute(quizID: UUID) async
+    func execute(quizID: UUID) async -> Result<Void, QuizDomainError>
 }
 
 class DeleteQuiz: DeleteQuizType {
@@ -18,7 +18,7 @@ class DeleteQuiz: DeleteQuizType {
         self.deleteQuizRepository = deleteQuizRepository
     }
     
-    func execute(quizID: UUID) async {
-        await deleteQuizRepository.deleteQuiz(quizID: quizID)
+    func execute(quizID: UUID) async -> Result<Void, QuizDomainError> {
+        return await deleteQuizRepository.deleteQuiz(quizID: quizID)
     }
 }

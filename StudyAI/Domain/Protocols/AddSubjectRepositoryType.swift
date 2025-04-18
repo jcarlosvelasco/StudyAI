@@ -6,5 +6,5 @@
 //
 
 protocol AddSubjectRepositoryType {
-    func addSubject(name: String) async
+    func addSubject(name: String) async -> Result<Void, SubjectDomainError>
 }

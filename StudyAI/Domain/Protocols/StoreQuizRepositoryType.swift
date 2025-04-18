@@ -6,5 +6,5 @@
 //
 
 protocol StoreQuizRepositoryType {
-    func storeQuiz(quiz: Quiz) async
+    func storeQuiz(quiz: Quiz) async -> Result<Void, QuizDomainError>
 }

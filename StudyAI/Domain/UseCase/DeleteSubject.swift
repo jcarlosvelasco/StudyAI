@@ -8,7 +8,7 @@
 import Foundation
 
 protocol DeleteSubjectType {
-    func execute(subjectID: UUID) async
+    func execute(subjectID: UUID) async -> Result<Void, SubjectDomainError>
 }
 
 class DeleteSubject: DeleteSubjectType {
@@ -18,7 +18,7 @@ class DeleteSubject: DeleteSubjectType {
         self.deleteSubjectRepository = deleteSubjectRepository
     }
     
-    func execute(subjectID: UUID) async {
+    func execute(subjectID: UUID) async -> Result<Void, SubjectDomainError> {
         await deleteSubjectRepository.deleteSubject(subjectID: subjectID)
     }
 }

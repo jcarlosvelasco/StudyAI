@@ -8,5 +8,5 @@
 import Foundation
 
 protocol UpdateSubjectRepositoryType {
-    func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async
+    func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, SubjectDomainError>
 }

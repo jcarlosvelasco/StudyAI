@@ -8,5 +8,5 @@
 import Foundation
 
 protocol DeleteDocumentFromSubjectRepositoryType {
-    func deleteDocumentFromSubject(subjectID: UUID, filePath: URL) async
+    func deleteDocumentFromSubject(subjectID: UUID, filePath: URL) async -> Result<Void, SubjectDomainError>
 }

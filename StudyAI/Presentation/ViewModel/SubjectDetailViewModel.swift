@@ -83,17 +83,31 @@ class SubjectDetailViewModel: ObservableObject {
     func fetchQuizzes() async {
         Logger.log(.info, "Fetch quizzes")
 
-        let fetchedQuizes = await getQuizes.execute(subjectID: subject.id)
-        DispatchQueue.main.async {
-            self.quizes = fetchedQuizes
-        }
-        
-        if fetchedQuizes.isEmpty {
+        let result = await getQuizes.execute(subjectID: subject.id)
+        guard case .success(let quizzes) = result else {
+            if case .failure(let error) = result {
+                handleQuizError(error: error)
+            } else {
+                handleQuizError(error: nil)
+            }
             return
         }
         
-        let updatedSubject = await getSubject.execute(subjectID: subject.id)
-        guard let updatedSubject else {
+        DispatchQueue.main.async {
+            self.quizes = quizzes
+        }
+        
+        if quizzes.isEmpty {
+            return
+        }
+        
+        let updatedSubjectResult = await getSubject.execute(subjectID: subject.id)
+        guard case .success(let updatedSubject?) = updatedSubjectResult else {
+            if case .failure(let error) = updatedSubjectResult {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
             return
         }
         
@@ -112,8 +126,8 @@ class SubjectDetailViewModel: ObservableObject {
         }
         else {
             var biggestDate: Date = Date.distantPast
-            for quiz in fetchedQuizes {
-                if let date = quiz.lastTimeCompleted {                    
+            for quiz in quizzes {
+                if let date = quiz.lastTimeCompleted {
                     if date.timeIntervalSince1970 > biggestDate.timeIntervalSince1970 {
                         biggestDate = date
                     }
@@ -128,23 +142,38 @@ class SubjectDetailViewModel: ObservableObject {
 
             if Int(updatedSubject.lastAIScoreUpdate!.timeIntervalSince1970) < Int(biggestDate.timeIntervalSince1970) {
                 Logger.log(.info, "Subject last ai score update bigger than biggest date, calculating score...")
-                await calculateScore(quizzes: fetchedQuizes)
+                await calculateScore(quizzes: quizzes)
             }
         }
     }
     
     func getDocuments(subjectID: UUID) async {
         let result = await getSubject.execute(subjectID: subjectID)
-        if let result = result {
-            DispatchQueue.main.async {
-                self.filePaths = result.fileURLs.map { $0 }
+        guard case .success(let subject?) = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
             }
+            return
+        }
+        
+        DispatchQueue.main.async {
+            self.filePaths = subject.fileURLs.map { $0 }
         }
     }
     
     func addDocuments(fileURLs: [URL]) async {
         let filteredFiles = fileURLs.filter { !self.filePaths.contains($0) }
-        await addDocumentsToSubject.execute(subjectID: subject.id, fileURLs: filteredFiles)
+        let result = await addDocumentsToSubject.execute(subjectID: subject.id, fileURLs: filteredFiles)
+        guard case .success() = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
+            return
+        }
         
         for fileURL in filteredFiles {
             DispatchQueue.main.async {
@@ -154,7 +183,16 @@ class SubjectDetailViewModel: ObservableObject {
     }
     
     func onDelete(filePath: URL) async {
-        await self.deleteDocumentFromSubject.execute(subjectID: subject.id, filePath: filePath)
+        let result = await self.deleteDocumentFromSubject.execute(subjectID: subject.id, filePath: filePath)
+        guard case .success() = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
+            return
+        }
+        
         DispatchQueue.main.async {
             self.filePaths = self.filePaths.filter { $0 != filePath }
         }
@@ -193,7 +231,16 @@ class SubjectDetailViewModel: ObservableObject {
         }
         
         self.quiz = createdQuiz
-        await storeQuiz.execute(quiz: createdQuiz)
+        
+        let storeQuizResult = await storeQuiz.execute(quiz: createdQuiz)
+        guard case .success() = storeQuizResult else {
+            if case .failure(let error) = storeQuizResult {
+                handleQuizError(error: error)
+            } else {
+                handleQuizError(error: nil)
+            }
+            return
+        }
         
         DispatchQueue.main.async {
             self.isLoading.toggle()
@@ -202,7 +249,16 @@ class SubjectDetailViewModel: ObservableObject {
     }
     
     func onDeleteQuiz(quizID: UUID) async {
-        await deleteQuiz.execute(quizID: quizID)
+        let result = await deleteQuiz.execute(quizID: quizID)
+        guard case .success(let text) = result else {
+            if case .failure(let error) = result {
+                handleQuizError(error: error)
+            } else {
+                handleQuizError(error: nil)
+            }
+            return
+        }
+        
         let newQuizes = self.quizes.filter { $0.id != quizID }
         DispatchQueue.main.async {
             self.quizes = newQuizes
@@ -258,7 +314,9 @@ class SubjectDetailViewModel: ObservableObject {
             await updateSubject.execute(subjectID: subject.id, score: score, scoreText: text)
         }
     }
-    
+}
+
+extension SubjectDetailViewModel {
     private func handleQuizError(error: QuizDomainError?) {
         errorMessage = quizPresentableErrorMapper.map(error: error)
         DispatchQueue.main.async {

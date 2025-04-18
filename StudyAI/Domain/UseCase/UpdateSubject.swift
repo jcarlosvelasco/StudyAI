@@ -8,7 +8,7 @@
 import Foundation
 
 protocol UpdateSubjectType {
-    func execute(subjectID: UUID, score: Int, scoreText: String?) async
+    func execute(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, SubjectDomainError>
 }
 
 
@@ -19,7 +19,7 @@ class UpdateSubject: UpdateSubjectType {
         self.updateSubjectRepositoryType = updateSubjectRepositoryType
     }
     
-    func execute(subjectID: UUID, score: Int, scoreText: String?) async {
+    func execute(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, SubjectDomainError> {
         await updateSubjectRepositoryType.updateSubject(subjectID: subjectID, score: score, scoreText: scoreText)
     }
 }

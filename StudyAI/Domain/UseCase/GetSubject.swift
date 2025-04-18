@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GetSubjectType {
-    func execute(subjectID: UUID) async -> Subject?
+    func execute(subjectID: UUID) async -> Result<Subject?, SubjectDomainError>
 }
 
 class GetSubject: GetSubjectType {
@@ -18,7 +18,7 @@ class GetSubject: GetSubjectType {
         self.getSubjectRepository = getSubjectRepository
     }
     
-    func execute(subjectID: UUID) async -> Subject? {
+    func execute(subjectID: UUID) async -> Result<Subject?, SubjectDomainError> {
         await self.getSubjectRepository.getSubject(subjectID: subjectID)
     }
 }

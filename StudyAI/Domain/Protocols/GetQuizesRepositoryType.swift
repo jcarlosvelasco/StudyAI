@@ -8,5 +8,5 @@
 import Foundation
 
 protocol GetQuizesRepositoryType {
-    func getQuizes(subjectID: UUID) async -> [Quiz]?
+    func getQuizes(subjectID: UUID) async -> Result<[Quiz], QuizDomainError>
 }

@@ -8,5 +8,5 @@
 import Foundation
 
 protocol DeleteQuizRepositoryType {
-    func deleteQuiz(quizID: UUID) async
+    func deleteQuiz(quizID: UUID) async -> Result<Void, QuizDomainError>
 }

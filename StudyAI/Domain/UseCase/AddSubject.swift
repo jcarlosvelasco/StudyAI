@@ -8,7 +8,7 @@
 import SwiftData
 
 protocol AddSubjectType {
-    func execute(name: String) async
+    func execute(name: String) async -> Result<Void, SubjectDomainError>
 }
 
 class AddSubject: AddSubjectType {
@@ -18,7 +18,7 @@ class AddSubject: AddSubjectType {
         self.addSubjectRepository = addSubjectRepository
     }
     
-    func execute(name: String) async {
+    func execute(name: String) async -> Result<Void, SubjectDomainError> {
         await addSubjectRepository.addSubject(name: name)
     }
 }

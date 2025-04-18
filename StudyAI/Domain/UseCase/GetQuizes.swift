@@ -8,7 +8,7 @@
 import Foundation
 
 protocol GetQuizesType {
-    func execute(subjectID: UUID) async -> [Quiz]
+    func execute(subjectID: UUID) async -> Result<[Quiz], QuizDomainError>
 }
 
 class GetQuizes: GetQuizesType {
@@ -18,11 +18,16 @@ class GetQuizes: GetQuizesType {
         self.getQuizesRepository = getQuizesRepository
     }
     
-    func execute(subjectID: UUID) async -> [Quiz] {
-        let value = await getQuizesRepository.getQuizes(subjectID: subjectID)
-        guard let value = value else {
-            return []
+    func execute(subjectID: UUID) async -> Result<[Quiz], QuizDomainError> {
+        let result = await getQuizesRepository.getQuizes(subjectID: subjectID)
+        guard case .success(let quizzes) = result else {
+            if case .failure(let error) = result {
+                return .failure(error)
+            } else {
+                return .failure(.generic)
+            }
         }
-        return value
+        
+        return .success(quizzes)
     }
 }

@@ -8,5 +8,5 @@
 import Foundation
 
 protocol GetSubjectRepositoryType {
-    func getSubject(subjectID: UUID) async -> Subject?
+    func getSubject(subjectID: UUID) async -> Result<Subject?, SubjectDomainError>
 }

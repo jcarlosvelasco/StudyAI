@@ -6,7 +6,7 @@
 //
 
 protocol StoreQuizType {
-    func execute(quiz: Quiz) async
+    func execute(quiz: Quiz) async -> Result<Void, QuizDomainError>
 }
 
 class StoreQuiz: StoreQuizType {
@@ -16,7 +16,7 @@ class StoreQuiz: StoreQuizType {
         self.storeQuizRepository = storeQuizRepository
     }
     
-    func execute(quiz: Quiz) async {
+    func execute(quiz: Quiz) async -> Result<Void, QuizDomainError> {
         await storeQuizRepository.storeQuiz(quiz: quiz)
     }
 }

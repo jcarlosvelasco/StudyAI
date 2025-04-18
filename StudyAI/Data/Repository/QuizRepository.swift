@@ -37,23 +37,51 @@ class QuizRepository:
         self.errorMapper = errorMapper
     }
     
-    func storeQuiz(quiz: Quiz) async {
+    func storeQuiz(quiz: Quiz) async -> Result<Void, QuizDomainError> {
         let entity = quizMapper.mapQuizToQuizEntity(quiz: quiz)
-        await database.storeQuiz(quiz: entity)
+        let result = await database.storeQuiz(quiz: entity)
+        guard case .success() = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+        return .success(())
     }
     
-    func getQuizes(subjectID: UUID) async -> [Quiz]? {
-        let entities = await database.getQuizes(subjectID: subjectID)
-        guard let entities else { return nil }
-        return entities.map { quizEntityMapper.mapToQuiz(entity: $0) }
+    func getQuizes(subjectID: UUID) async -> Result<[Quiz], QuizDomainError> {
+        let result = await database.getQuizes(subjectID: subjectID)
+        guard case .success(let entities) = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+        
+        let quizzes = entities.map { quizEntityMapper.mapToQuiz(entity: $0) }
+        return .success(quizzes)
     }
     
-    func deleteQuiz(quizID: UUID) async {
-        await database.deleteQuiz(quizID: quizID)
+    func deleteQuiz(quizID: UUID) async -> Result<Void, QuizDomainError> {
+        let result = await database.deleteQuiz(quizID: quizID)
+        guard case .success() = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+        return .success(())
     }
     
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async {
-        await database.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, QuizDomainError> {
+        let result = await database.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
+        guard case .success() = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+        return .success(())
     }
     
     func createQuiz(text: String, name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {        

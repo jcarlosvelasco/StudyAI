@@ -8,5 +8,5 @@
 import Foundation
 
 protocol AddDocumentsToSubjectRepositoryType {
-    func addDocumentsToSubject(subjectID: UUID, fileURLs: [URL]) async
+    func addDocumentsToSubject(subjectID: UUID, fileURLs: [URL]) async -> Result<Void, SubjectDomainError>
 }

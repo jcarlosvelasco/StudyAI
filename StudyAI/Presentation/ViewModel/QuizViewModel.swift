@@ -17,18 +17,23 @@ class QuizViewModel: ObservableObject {
     @Published var showScore: Bool = false
     @Published var showingAlert: Bool = false
     @Published var showNewHighScoreText: Bool = false
+    @Published var showErrorAlert: Bool = false
     
     private let updateQuiz: UpdateQuizOnCompletionType
+    private let quizPresentableErrorMapper: QuizPresentableErrorMapper
     
     var score = 0
+    var errorMessage: String = ""
         
     init(
         quiz: Quiz?,
-        updateQuiz: UpdateQuizOnCompletionType = Container.shared.updateQuizOnCompletion()
+        updateQuiz: UpdateQuizOnCompletionType = Container.shared.updateQuizOnCompletion(),
+        quizPresentableErrorMapper: QuizPresentableErrorMapper = Container.shared.quizPresentableErrorMapper()
     ) {
         Logger.log(.info, "Init")
         self.quiz = quiz
         self.updateQuiz = updateQuiz
+        self.quizPresentableErrorMapper = quizPresentableErrorMapper
     }
     
     func onNextClick() {
@@ -66,13 +71,30 @@ class QuizViewModel: ObservableObject {
                 self.showNewHighScoreText.toggle()
             }
             
-            await updateQuiz.execute(quizID: quiz.id, highScore: self.score)
+            let result = await updateQuiz.execute(quizID: quiz.id, highScore: self.score)
+            guard case .success() = result else {
+                if case .failure(let error) = result {
+                    handleQuizError(error: error)
+                } else {
+                    handleQuizError(error: nil)
+                }
+                return
+            }
         }
     }
     
     func onItemClick(optionID: UUID) {
         DispatchQueue.main.async {
             self.selectedOptionID = optionID
+        }
+    }
+}
+
+extension QuizViewModel {
+    private func handleQuizError(error: QuizDomainError?) {
+        errorMessage = quizPresentableErrorMapper.map(error: error)
+        DispatchQueue.main.async {
+            self.showErrorAlert.toggle()
         }
     }
 }

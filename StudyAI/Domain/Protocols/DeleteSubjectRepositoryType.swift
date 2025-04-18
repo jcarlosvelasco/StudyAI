@@ -8,5 +8,5 @@
 import Foundation
 
 protocol DeleteSubjectRepositoryType {
-    func deleteSubject(subjectID: UUID) async
+    func deleteSubject(subjectID: UUID) async -> Result<Void, SubjectDomainError>
 }

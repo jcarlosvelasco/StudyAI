@@ -8,7 +8,7 @@
 import Foundation
 
 protocol DeleteDocumentFromSubjectType {
-    func execute(subjectID: UUID, filePath: URL) async
+    func execute(subjectID: UUID, filePath: URL) async -> Result<Void, SubjectDomainError>
 }
 
 class DeleteDocumentFromSubject: DeleteDocumentFromSubjectType {
@@ -18,7 +18,7 @@ class DeleteDocumentFromSubject: DeleteDocumentFromSubjectType {
         self.deleteDocumentFromSubjectRepo = deleteDocumentFromSubjectRepo
     }
     
-    func execute(subjectID: UUID, filePath: URL) async {
+    func execute(subjectID: UUID, filePath: URL) async -> Result<Void, SubjectDomainError> {
         await self.deleteDocumentFromSubjectRepo.deleteDocumentFromSubject(subjectID: subjectID, filePath: filePath)
     }
 }

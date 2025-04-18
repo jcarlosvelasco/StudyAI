@@ -8,7 +8,7 @@
 import Foundation
 
 protocol AddDocumentsToSubjectType {
-    func execute(subjectID: UUID, fileURLs: [URL]) async
+    func execute(subjectID: UUID, fileURLs: [URL]) async -> Result<Void, SubjectDomainError>
 }
 
 class AddDocumentsToSubject: AddDocumentsToSubjectType {
@@ -18,7 +18,7 @@ class AddDocumentsToSubject: AddDocumentsToSubjectType {
         self.addDocumentsToSubjectRepository = addDocumentsToSubjectRepository
     }
     
-    func execute(subjectID: UUID, fileURLs: [URL]) async {
-        await addDocumentsToSubjectRepository.addDocumentsToSubject(subjectID: subjectID, fileURLs: fileURLs)
+    func execute(subjectID: UUID, fileURLs: [URL]) async -> Result<Void, SubjectDomainError> {
+        return await addDocumentsToSubjectRepository.addDocumentsToSubject(subjectID: subjectID, fileURLs: fileURLs)
     }
 }

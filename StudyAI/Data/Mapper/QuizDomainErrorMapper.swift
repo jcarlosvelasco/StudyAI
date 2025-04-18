@@ -14,4 +14,13 @@ class QuizDomainErrorMapper {
                 return .generic
         }
     }
+    
+    func map(error: DatabaseError?) -> QuizDomainError {
+        switch error {
+            case .generic:
+                return .databaseError
+            default:
+                return .databaseError
+        }
+    }
 }

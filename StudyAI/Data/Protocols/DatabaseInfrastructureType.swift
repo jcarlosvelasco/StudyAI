@@ -13,14 +13,14 @@ enum DatabaseError: Error {
 
 protocol DatabaseInfrastructureType {
     func getSubjects() async -> Result<[SubjectEntity], DatabaseError>
-    func addSubject(subject: SubjectEntity) async
-    func addDocumentURLToSubject(subjectID: UUID, documentURLString: String) async
-    func deleteSubject(subjectID: UUID) async
-    func getSubject(subjectID: UUID) async -> SubjectEntity?
-    func deleteDocumentFromSubject(subjectID: UUID, documentURLString: String) async
-    func storeQuiz(quiz: QuizEntity) async
-    func getQuizes(subjectID: UUID) async -> [QuizEntity]?
-    func deleteQuiz(quizID: UUID) async
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async
-    func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async
+    func addSubject(subject: SubjectEntity) async -> Result<Void, DatabaseError>
+    func addDocumentURLToSubject(subjectID: UUID, documentURLString: String) async -> Result<Void, DatabaseError>
+    func deleteSubject(subjectID: UUID) async -> Result<Void, DatabaseError>
+    func getSubject(subjectID: UUID) async -> Result<SubjectEntity?, DatabaseError>
+    func deleteDocumentFromSubject(subjectID: UUID, documentURLString: String) async -> Result<Void, DatabaseError>
+    func storeQuiz(quiz: QuizEntity) async -> Result<Void, DatabaseError>
+    func getQuizes(subjectID: UUID) async -> Result<[QuizEntity], DatabaseError>
+    func deleteQuiz(quizID: UUID) async -> Result<Void, DatabaseError>
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, DatabaseError>
+    func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, DatabaseError>
 }

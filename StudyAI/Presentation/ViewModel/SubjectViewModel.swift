@@ -57,7 +57,16 @@ class SubjectsViewModel: ObservableObject {
     }
     
     func addSample() async {
-        await addSubject.execute(name: newSubjectName)
+        let result = await addSubject.execute(name: newSubjectName)
+        guard case .success() = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
+            return
+        }
+        
         DispatchQueue.main.async {
             self.newSubjectName = ""
         }
@@ -65,7 +74,15 @@ class SubjectsViewModel: ObservableObject {
     }
     
     func onDelete(subjectID: UUID) async {
-        await deleteSubject.execute(subjectID: subjectID)
+        let result = await deleteSubject.execute(subjectID: subjectID)
+        guard case .success() = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
+            return
+        }
         DispatchQueue.main.async {
             self.subjects = self.subjects.filter { $0.id != subjectID }
         }
