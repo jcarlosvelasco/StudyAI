@@ -8,4 +8,5 @@
 enum SubjectDomainError: Error {
     case tooManyRequests
     case generic
+    case databaseError
 }

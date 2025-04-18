@@ -7,8 +7,12 @@
 
 import Foundation
 
+enum DatabaseError: Error {
+    case generic
+}
+
 protocol DatabaseInfrastructureType {
-    func getSubjects() async -> [SubjectEntity]
+    func getSubjects() async -> Result<[SubjectEntity], DatabaseError>
     func addSubject(subject: SubjectEntity) async
     func addDocumentURLToSubject(subjectID: UUID, documentURLString: String) async
     func deleteSubject(subjectID: UUID) async

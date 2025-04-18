@@ -13,20 +13,27 @@ class SubjectsViewModel: ObservableObject {
     @Published var showCategorySelector: Bool = false
     @Published var newSubjectName: String = ""
     @Published var subjects: [Subject] = []
+    @Published var showErrorAlert: Bool = false
+    
+    var errorMessage: String = ""
             
     private let getSubjects: GetSubjectsType
     private let addSubject: AddSubjectType
     private let deleteSubject: DeleteSubjectType
+    
+    private let subjectPresentableErrorMapper: SubjectPresentableErrorMapper
 
     init(
         getSubjects: GetSubjectsType = Container.shared.getSubjects(),
         addSubject: AddSubjectType = Container.shared.getAddSubject(),
-        deleteSubject: DeleteSubjectType = Container.shared.deleteSubject()
+        deleteSubject: DeleteSubjectType = Container.shared.deleteSubject(),
+        subjectPresentableErrorMapper: SubjectPresentableErrorMapper = Container.shared.subjectPresentableErrorMapper()
     ) {
         Logger.log(.info, "Init")
         self.getSubjects = getSubjects
         self.addSubject = addSubject
         self.deleteSubject = deleteSubject
+        self.subjectPresentableErrorMapper = subjectPresentableErrorMapper
             
         Task {
             await fetchSubjects()
@@ -34,7 +41,16 @@ class SubjectsViewModel: ObservableObject {
     }
     
     func fetchSubjects() async {
-        let fetchedSubjects = await getSubjects.execute()
+        let result = await getSubjects.execute()
+        guard case .success(let fetchedSubjects) = result else {
+            if case .failure(let error) = result {
+                handleSubjectError(error: error)
+            } else {
+                handleSubjectError(error: nil)
+            }
+            return
+        }
+        
         DispatchQueue.main.async {
             self.subjects = fetchedSubjects
         }
@@ -52,6 +68,13 @@ class SubjectsViewModel: ObservableObject {
         await deleteSubject.execute(subjectID: subjectID)
         DispatchQueue.main.async {
             self.subjects = self.subjects.filter { $0.id != subjectID }
+        }
+    }
+    
+    private func handleSubjectError(error: SubjectDomainError?) {
+        errorMessage = subjectPresentableErrorMapper.map(error: error)
+        DispatchQueue.main.async {
+            self.showErrorAlert.toggle()
         }
     }
 }

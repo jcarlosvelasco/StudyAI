@@ -7,7 +7,7 @@
 
 
 protocol GetSubjectsType {
-    func execute() async -> [Subject]
+    func execute() async -> Result<[Subject], SubjectDomainError>
 }
 
 class GetSubjects: GetSubjectsType {
@@ -18,7 +18,7 @@ class GetSubjects: GetSubjectsType {
         self.getSubjectsRepo = getSubjectsRepo
     }
     
-    func execute() async -> [Subject] {
+    func execute() async -> Result<[Subject], SubjectDomainError> {
         return await getSubjectsRepo.getSubjectsFromDB()
     }
 }

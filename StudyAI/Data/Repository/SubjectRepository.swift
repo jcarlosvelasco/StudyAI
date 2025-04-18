@@ -42,9 +42,18 @@ class SubjectRepository:
         self.errorMapper = errorMapper
     }
     
-    func getSubjectsFromDB() async -> [Subject] {
+    func getSubjectsFromDB() async -> Result<[Subject], SubjectDomainError> {
         let result = await database.getSubjects()
-        return result.map { subjectEntityMapper.mapToSubject(entity: $0) }    
+        
+        guard case .success(let subjectEntities) = result else {
+            guard case .failure(let error) = result else {
+                return .failure(.generic)
+            }
+            return .failure(errorMapper.map(error: error))
+        }
+                
+        let subjects = subjectEntities.map { subjectEntityMapper.mapToSubject(entity: $0) }
+        return .success(subjects)
     }
     
     func addSubject(name: String) async {

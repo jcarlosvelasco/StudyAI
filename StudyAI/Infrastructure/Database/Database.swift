@@ -15,7 +15,7 @@ class Database: DatabaseInfrastructureType {
         self.actor = DatabaseActor(modelContainer: modelContainer)
     }
     
-    func getSubjects() async -> [SubjectEntity] {
+    func getSubjects() async -> Result<[SubjectEntity], DatabaseError> {
         await actor.getSubjects()
     }
     

@@ -6,5 +6,5 @@
 //
 
 protocol GetSubjectsRepositoryType {
-    func getSubjectsFromDB() async -> [Subject]
+    func getSubjectsFromDB() async -> Result<[Subject], SubjectDomainError>
 }

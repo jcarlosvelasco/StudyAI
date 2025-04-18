@@ -10,13 +10,14 @@ import Foundation
 
 @ModelActor
 actor DatabaseActor {
-    func getSubjects() -> [SubjectEntity] {
+    func getSubjects() async -> Result<[SubjectEntity], DatabaseError> {
         let descriptor = FetchDescriptor<SubjectEntity>(sortBy: [SortDescriptor(\.name)])
         do {
-            return try modelContext.fetch(descriptor)
+            let result = try modelContext.fetch(descriptor)
+            return .success(result)
         } catch {
             Logger.log(.error, "Error fetching subjects: \(error)")
-            return []
+            return .failure(.generic)
         }
     }
     

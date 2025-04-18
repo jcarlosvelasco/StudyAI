@@ -15,7 +15,7 @@ struct StudyAIApp: App {
     var body: some Scene {        
         WindowGroup {
             SubjectsView(
-                subjectsVM: SubjectsViewModel()
+                viewModel: SubjectsViewModel()
             )
         }
         .modelContainer(dependencies.modelContainer)

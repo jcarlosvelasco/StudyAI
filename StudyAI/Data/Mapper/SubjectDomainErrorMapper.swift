@@ -14,4 +14,13 @@ class SubjectDomainErrorMapper {
                 return .generic
         }
     }
+    
+    func map(error: DatabaseError?) -> SubjectDomainError {
+        switch error {
+            case .generic:
+                return .databaseError
+            default:
+                return .databaseError
+        }
+    }
 }

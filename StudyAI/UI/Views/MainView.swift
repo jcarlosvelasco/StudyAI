@@ -16,7 +16,7 @@ struct MainView: View {
             }
             Tab("Subjects", systemImage: "books.vertical") {
                 SubjectsView(
-                    subjectsVM: SubjectsViewModel()
+                    viewModel: SubjectsViewModel()
                 )
             }
         }

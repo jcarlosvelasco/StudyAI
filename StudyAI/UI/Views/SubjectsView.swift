@@ -8,17 +8,17 @@
 import SwiftUI
 
 struct SubjectsView: View {
-    @StateObject var subjectsVM: SubjectsViewModel
+    @StateObject var viewModel: SubjectsViewModel
     
     var body: some View {
         NavigationStack {
             VStack {
-                if (subjectsVM.subjects.isEmpty) {
+                if (viewModel.subjects.isEmpty) {
                     Text("No subjects found")
                 }
                 else {
                     List {
-                        ForEach(subjectsVM.subjects, id: \.id) { subject in
+                        ForEach(viewModel.subjects, id: \.id) { subject in
                             NavigationLink {
                                 SubjectDetailView(
                                     viewModel: SubjectDetailViewModel(
@@ -30,7 +30,7 @@ struct SubjectsView: View {
                                     subjectName: subject.name,
                                     onDelete: {
                                         Task {
-                                            await subjectsVM.onDelete(subjectID: subject.id)
+                                            await viewModel.onDelete(subjectID: subject.id)
                                         }
                                     }
                                 )
@@ -42,7 +42,7 @@ struct SubjectsView: View {
             .toolbar {
                 ToolbarItem(placement: .primaryAction) {
                     Button(action: {
-                        subjectsVM.showCategorySelector.toggle()
+                        viewModel.showCategorySelector.toggle()
                     }, label: {
                         Image(systemName: "plus")
                     })
@@ -50,34 +50,40 @@ struct SubjectsView: View {
             }
             .navigationTitle("Subjects")
         }
-        .sheet(isPresented: $subjectsVM.showCategorySelector) {
+        .sheet(isPresented: $viewModel.showCategorySelector) {
             VStack {
                 HStack {
                     Text("Enter subject name").bold()
                     Spacer()
                 }
-                TextField("Subject name", text: $subjectsVM.newSubjectName)
+                TextField("Subject name", text: $viewModel.newSubjectName)
                     .padding(.bottom)
                 HStack {
                     Button(action: {
-                        subjectsVM.showCategorySelector.toggle()
+                        viewModel.showCategorySelector.toggle()
                     }, label: {
                         Text("Cancel")
                     })
                     Spacer()
                     Button(action: {
-                        subjectsVM.showCategorySelector.toggle()
+                        viewModel.showCategorySelector.toggle()
                         Task {
-                            await subjectsVM.addSample()
+                            await viewModel.addSample()
                         }
                     }, label: {
                         Text("Accept")
                     })
-                    .disabled(subjectsVM.newSubjectName.isEmpty)
+                    .disabled(viewModel.newSubjectName.isEmpty)
                 }
             }
             .padding()
             .adjustSheetHeightToContent()
+        }
+        .alert(viewModel.errorMessage, isPresented: $viewModel.showErrorAlert) {
+            Button("OK", role: .cancel) {
+                viewModel.errorMessage = ""
+                viewModel.showErrorAlert.toggle()
+            }
         }
     }
 }
@@ -85,7 +91,7 @@ struct SubjectsView: View {
 struct SubjectsView_Previews: PreviewProvider {
     static var previews: some View {
         SubjectsView(
-            subjectsVM: SubjectsViewModel()
+            viewModel: SubjectsViewModel()
         )
     }
 }
