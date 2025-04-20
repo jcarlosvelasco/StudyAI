@@ -48,25 +48,36 @@ class CreateQuiz: CreateQuizType {
     }
     
     func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {
-        let contents = await withTaskGroup(of: String?.self) { group -> [String] in
+        var readErrors: [DocumentDomainError] = []
+
+        let contents = await withTaskGroup(of: Result<String, DocumentDomainError>.self) { group -> [String] in
             for documentURL in documentURLs {
                 group.addTask {
                     await self.readPDF.execute(documentURL: documentURL)
                 }
             }
-            
+
             var results: [String] = []
-            for await content in group {
-                if let content = content {
+
+            for await result in group {
+                switch result {
+                case .success(let content):
                     results.append(content)
+                case .failure(let error):
+                    readErrors.append(error)
                 }
             }
-            
+
             return results
+        }
+
+        if let _ = readErrors.first {
+            return .failure(.generic)
         }
 
         let totalContent = initialPrompt + contents.joined()
         let result = await createQuizRepository.createQuiz(text: totalContent, name: name, subjectID: subjectID)
         return result
-     }
+    }
+
 }

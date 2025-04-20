@@ -8,5 +8,5 @@
 import Foundation
 
 protocol ReadPDFRepositoryType {
-    func readPDF(documentURL: URL) async -> String?
+    func readPDF(documentURL: URL) async -> Result<String, DocumentDomainError>
 }

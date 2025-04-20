@@ -63,4 +63,11 @@ extension Container {
         }
         .singleton
     }
+    
+    var documentDomainErrorMapper: Factory<DocumentDomainErrorMapper> {
+        self {
+            DocumentDomainErrorMapper()
+        }
+        .singleton
+    }
 }

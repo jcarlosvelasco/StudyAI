@@ -8,7 +8,7 @@
 import Foundation
 
 protocol ReadPDFType {
-    func execute(documentURL: URL) async -> String?
+    func execute(documentURL: URL) async -> Result<String, DocumentDomainError>
 }
 
 class ReadPDF: ReadPDFType {
@@ -18,7 +18,7 @@ class ReadPDF: ReadPDFType {
         self.readPDFRepository = readPDFRepository
     }
     
-    func execute(documentURL: URL) async -> String?  {
+    func execute(documentURL: URL) async -> Result<String, DocumentDomainError> {
         return await readPDFRepository.readPDF(documentURL: documentURL)
     }
 }

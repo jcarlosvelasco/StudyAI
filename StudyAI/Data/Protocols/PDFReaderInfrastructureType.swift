@@ -8,5 +8,5 @@
 import Foundation
 
 protocol PDFReaderInfrastructureType {
-    func readPDF(documentURL: URL) async -> String?
+    func readPDF(documentURL: URL) async -> Result<String, PDFReaderError>
 }

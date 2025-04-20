@@ -68,7 +68,10 @@ extension Container {
     
     private var documentRepository: Factory<DocumentRepository> {
         self {
-            DocumentRepository(pdfReader: Container.shared.getPDFReader())
+            DocumentRepository(
+                pdfReader: Container.shared.getPDFReader(),
+                errorMapper: Container.shared.documentDomainErrorMapper()
+            )
         }
         .singleton
     }

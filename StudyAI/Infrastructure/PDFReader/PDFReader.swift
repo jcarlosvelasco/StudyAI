@@ -8,7 +8,7 @@
 import PDFKit
 
 class PDFReader: PDFReaderInfrastructureType {
-    func readPDF(documentURL: URL) async -> String? {
+    func readPDF(documentURL: URL) async -> Result<String, PDFReaderError> {
         if let pdf = PDFDocument(url: documentURL) {
             let pageCount = pdf.pageCount
             let documentContent = NSMutableAttributedString()
@@ -19,9 +19,9 @@ class PDFReader: PDFReaderInfrastructureType {
                 documentContent.append(pageContent)
             }
             
-            return documentContent.string
+            return .success(documentContent.string)
         }
         
-        return nil
+        return .failure(.invalidFormat)
     }
 }

@@ -250,7 +250,7 @@ class SubjectDetailViewModel: ObservableObject {
     
     func onDeleteQuiz(quizID: UUID) async {
         let result = await deleteQuiz.execute(quizID: quizID)
-        guard case .success(let text) = result else {
+        guard case .success() = result else {
             if case .failure(let error) = result {
                 handleQuizError(error: error)
             } else {
