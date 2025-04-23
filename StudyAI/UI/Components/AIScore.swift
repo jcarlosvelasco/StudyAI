@@ -46,7 +46,7 @@ struct AIScore: View {
                 .padding(.trailing)
                 
                 
-                Text(text ?? "Loading...")
+                Text(text ?? "-")
                 Spacer()
             }
             .padding(.horizontal)

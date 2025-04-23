@@ -40,6 +40,5 @@ class GetAIScore: GetAIScoreTextType {
         }
         let prompt = PromptConfig.aiScorePrompt(locale: locale, quizzesText: text, score: score)
         return await getAIScoreTextRepo.getAIScore(text: prompt)
-        //return .success("A")
     }
 }

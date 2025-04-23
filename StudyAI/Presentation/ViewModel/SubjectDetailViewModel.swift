@@ -12,6 +12,7 @@ class SubjectDetailViewModel: ObservableObject {
     let subject: Subject
     let allowedMultipleFiles = Config.allowMultipleFiles
     let allowedFileExtensions = Config.allowedFileExtensions
+    var allowFetchQuizzes: Bool = true
     
     @Published var filePaths: [URL] = []
     @Published var isImporting = false
@@ -274,14 +275,12 @@ class SubjectDetailViewModel: ObservableObject {
         
         DispatchQueue.main.async {
             self.score = 0
-            self.scoreText = nil
+            self.scoreText = "Loading..."
         }
         
         var totalQuestions = 0
         for quiz in quizzes {
-            for _ in quiz.questions {
-                totalQuestions += 1
-            }
+            totalQuestions += quiz.questions.count
         }
 
         guard totalQuestions > 0 else {
