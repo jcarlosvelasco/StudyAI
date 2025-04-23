@@ -29,7 +29,8 @@ class QuizEntityMapper {
                     id: questionEntity.id,
                     options: options,
                     correctOptionID: questionEntity.correctOptionID,
-                    question: questionEntity.question
+                    question: questionEntity.question,
+                    selectedOptionID: questionEntity.selectedOptionID
                 )
             )
         }

@@ -138,6 +138,7 @@ class SubjectRepository:
     }
     
     func getAIScore(text: String) async -> Result<String, SubjectDomainError> {
+        Logger.log(.info, "Get AI Score")
         let result = await apiDataSource.sendMessageToLLM(text: text)
         guard case .success(let response) = result else {
             guard case .failure(let error) = result else {

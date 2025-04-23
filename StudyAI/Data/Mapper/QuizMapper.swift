@@ -29,7 +29,8 @@ class QuizMapper {
                     id: question.id,
                     options: options,
                     correctOptionID: question.correctOptionID,
-                    question: question.question
+                    question: question.question,
+                    selectedOptionID: question.selectedOptionID
                 )
             )
         }

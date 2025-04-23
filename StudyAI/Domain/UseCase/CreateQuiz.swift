@@ -31,20 +31,7 @@ class CreateQuiz: CreateQuizType {
             locale = Locale.current.languageCode ?? "en"
         }
         
-        self.initialPrompt = #"""
-    You need to create a quiz with the following PDF content. Both the questions and answers must be in the language: \#(locale). If you don't support that language, all the questions and answers must be in English. Each quiz will have four questions, with only one correct answer. The maximum amount of questions will be 12. Make sure your response is only a JSON with this format: {
-        "quiz": {
-          "questions": [
-            {
-              "id": 1,
-              "question": "¿What is the capital of France?",
-              "options": ["Madrid", "Paris", "Roma", "Berlin"],
-              "correct_answer": "Paris"
-            }
-          ]
-        }
-      }
-    """#
+        self.initialPrompt = PromptConfig.quizPrompt(locale: locale)
     }
     
     func execute(documentURLs: [URL], name: String, subjectID: UUID) async -> Result<Quiz, QuizDomainError> {

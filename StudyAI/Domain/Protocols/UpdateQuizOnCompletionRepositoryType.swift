@@ -8,5 +8,5 @@
 import Foundation
 
 protocol UpdateQuizOnCompletionRepositoryType {
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, QuizDomainError>
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, QuizDomainError>
 }

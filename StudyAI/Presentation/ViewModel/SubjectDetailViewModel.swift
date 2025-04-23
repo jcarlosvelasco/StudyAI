@@ -120,18 +120,20 @@ class SubjectDetailViewModel: ObservableObject {
         
         if updatedSubject.lastAIScoreUpdate == nil {
             Logger.log(.info, "SubjectDetailViewModel, Last AI Score update is nil, calculating score...")
+            
             DispatchQueue.main.async {
                 self.score = 0
+                self.scoreText = "Loading..."
             }
+            await calculateScore(quizzes: quizzes)
         }
         else {
             var biggestDate: Date = Date.distantPast
             for quiz in quizzes {
-                if let date = quiz.lastTimeCompleted {
-                    if date.timeIntervalSince1970 > biggestDate.timeIntervalSince1970 {
-                        biggestDate = date
-                    }
+                if quiz.lastTimeCompleted.timeIntervalSince1970 > biggestDate.timeIntervalSince1970 {
+                    biggestDate = quiz.lastTimeCompleted
                 }
+                
                 else {
                     Logger.log(.info, "Nil date")
                 }

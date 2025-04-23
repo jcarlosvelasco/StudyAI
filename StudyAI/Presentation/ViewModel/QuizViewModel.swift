@@ -12,12 +12,14 @@ class QuizViewModel: ObservableObject {
     let quiz: Quiz?
     
     @Published var index = 0
-    @Published var selectedOptionID: UUID?
+    private var selectedOptionsIDs: [UUID] = []
+
     @Published var showResult: Bool = false
     @Published var showScore: Bool = false
     @Published var showingAlert: Bool = false
     @Published var showNewHighScoreText: Bool = false
     @Published var showErrorAlert: Bool = false
+    @Published var selectedOptionID: UUID?
     
     private let updateQuiz: UpdateQuizOnCompletionType
     private let quizPresentableErrorMapper: QuizPresentableErrorMapper
@@ -39,6 +41,8 @@ class QuizViewModel: ObservableObject {
     func onNextClick() {
         guard let quiz = quiz else { return }
         
+        selectedOptionsIDs.append(selectedOptionID!)
+
         if selectedOptionID == quiz.questions[index].correctOptionID {
             score += 1
         }
@@ -65,13 +69,14 @@ class QuizViewModel: ObservableObject {
     
     func onUpdateQuiz() async {
         guard let quiz = quiz else { return }
+        Logger.log(.info, "Selected options: \(selectedOptionsIDs)")
         
         if self.score > quiz.highestScore {
             DispatchQueue.main.async {
                 self.showNewHighScoreText.toggle()
             }
             
-            let result = await updateQuiz.execute(quizID: quiz.id, highScore: self.score)
+            let result = await updateQuiz.execute(quizID: quiz.id, highScore: self.score, selectedOptionsIDs: selectedOptionsIDs)
             guard case .success() = result else {
                 if case .failure(let error) = result {
                     handleQuizError(error: error)

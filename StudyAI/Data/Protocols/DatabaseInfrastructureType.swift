@@ -21,6 +21,6 @@ protocol DatabaseInfrastructureType {
     func storeQuiz(quiz: QuizEntity) async -> Result<Void, DatabaseError>
     func getQuizes(subjectID: UUID) async -> Result<[QuizEntity], DatabaseError>
     func deleteQuiz(quizID: UUID) async -> Result<Void, DatabaseError>
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, DatabaseError>
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, DatabaseError>
     func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, DatabaseError>
 }

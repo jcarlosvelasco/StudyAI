@@ -13,7 +13,7 @@ class Quiz {
     let subjectID: UUID
     var questions: [Question]
     var highestScore: Int = 0
-    var lastTimeCompleted: Date?
+    var lastTimeCompleted: Date
     
     init(
         id: UUID,
@@ -21,7 +21,7 @@ class Quiz {
         questions: [Question],
         subjectID: UUID,
         highestScore: Int,
-        lastTimeCompleted: Date?
+        lastTimeCompleted: Date
     ) {
         self.id = id
         self.name = name
@@ -36,5 +36,6 @@ class Quiz {
         self.id = UUID()
         self.questions = []
         self.subjectID = subjectID
+        self.lastTimeCompleted = Date()
     }
 }

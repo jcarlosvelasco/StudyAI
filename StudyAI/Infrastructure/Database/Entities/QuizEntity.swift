@@ -15,14 +15,14 @@ class QuizEntity {
     var subjectID: UUID
     var questions: [QuestionEntity]
     var highestScore: Int = 0
-    var lastTimeCompleted: Date?
+    var lastTimeCompleted: Date
     
     init(
         id: UUID,
         name: String,
         subjectID: UUID,
         highestScore: Int,
-        lastTimeCompleted: Date?,
+        lastTimeCompleted: Date,
         questions: [QuestionEntity]
     ) {
         self.id = id
@@ -40,17 +40,20 @@ class QuestionEntity {
     var question: String
     var options: [OptionEntity]
     var correctOptionID: UUID
+    var selectedOptionID: UUID?
     
     init(
         id: UUID,
         options: [OptionEntity],
         correctOptionID: UUID,
-        question: String
+        question: String,
+        selectedOptionID: UUID?
     ) {
         self.id = id
         self.question = question
         self.options = options
         self.correctOptionID = correctOptionID
+        self.selectedOptionID = selectedOptionID
     }
 }
 

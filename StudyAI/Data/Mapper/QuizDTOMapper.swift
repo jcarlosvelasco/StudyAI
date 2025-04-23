@@ -28,7 +28,7 @@ class QuizDTOMapper {
             }
             
             quiz.questions.append(
-                Question(options: options, correctOptionID: correctOptionID!, question: question.question)
+                Question(options: options, correctOptionID: correctOptionID!, question: question.question, selectedOptionID: nil)
             )
         }
 

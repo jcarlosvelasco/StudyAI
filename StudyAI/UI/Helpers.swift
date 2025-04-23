@@ -22,8 +22,8 @@ class Helpers {
         let options2 = createSampleOptions()
         
         return [
-            Question(options: options1, correctOptionID: options1[1].id, question: "Question"),
-            Question(options: options2, correctOptionID: options2[3].id, question: "Question")
+            Question(options: options1, correctOptionID: options1[1].id, question: "Question", selectedOptionID: options1[2].id),
+            Question(options: options2, correctOptionID: options2[3].id, question: "Question", selectedOptionID: options1[3].id)
         ]
     }
 

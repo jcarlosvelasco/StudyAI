@@ -194,7 +194,7 @@ actor DatabaseActor {
             }
     }
     
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, DatabaseError> {
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, DatabaseError> {
         let result = await getQuizFromQuizID(quizID: quizID)
         guard case .success(let quiz) = result else {
             guard case .failure(let failure) = result else {
@@ -206,6 +206,11 @@ actor DatabaseActor {
         if let quiz = quiz {
             quiz.highestScore = highScore
             quiz.lastTimeCompleted = Date()
+            
+            for i in 0..<quiz.questions.count {
+                quiz.questions[i].selectedOptionID = selectedOptionsIDs[i]
+            }
+            
             do {
                 try modelContext.save()
                 Logger.log(.info, "Updated quiz")

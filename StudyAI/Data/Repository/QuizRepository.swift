@@ -73,8 +73,8 @@ class QuizRepository:
         return .success(())
     }
     
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, QuizDomainError> {
-        let result = await database.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, QuizDomainError> {
+        let result = await database.updateQuizOnCompletion(quizID: quizID, highScore: highScore, selectedOptionsIDs: selectedOptionsIDs)
         guard case .success() = result else {
             guard case .failure(let error) = result else {
                 return .failure(.generic)

@@ -51,8 +51,8 @@ class Database: DatabaseInfrastructureType {
         await actor.deleteQuiz(quizID: quizID)
     }
     
-    func updateQuizOnCompletion(quizID: UUID, highScore: Int) async -> Result<Void, DatabaseError> {
-        await actor.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
+    func updateQuizOnCompletion(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, DatabaseError> {
+        await actor.updateQuizOnCompletion(quizID: quizID, highScore: highScore, selectedOptionsIDs: selectedOptionsIDs)
     }
     
     func updateSubject(subjectID: UUID, score: Int, scoreText: String?) async -> Result<Void, DatabaseError> {

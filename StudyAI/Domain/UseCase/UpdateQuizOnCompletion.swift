@@ -8,7 +8,7 @@
 import Foundation
 
 protocol UpdateQuizOnCompletionType {
-    func execute(quizID: UUID, highScore: Int) async -> Result<Void, QuizDomainError>
+    func execute(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, QuizDomainError>
 }
 
 class UpdateQuizOnCompletion: UpdateQuizOnCompletionType {
@@ -18,7 +18,11 @@ class UpdateQuizOnCompletion: UpdateQuizOnCompletionType {
         self.updateQuizOnCompletionRepository = updateQuizOnCompletionRepository
     }
     
-    func execute(quizID: UUID, highScore: Int) async -> Result<Void, QuizDomainError> {
-        await updateQuizOnCompletionRepository.updateQuizOnCompletion(quizID: quizID, highScore: highScore)
+    func execute(quizID: UUID, highScore: Int, selectedOptionsIDs: [UUID]) async -> Result<Void, QuizDomainError> {
+        return await updateQuizOnCompletionRepository.updateQuizOnCompletion(
+            quizID: quizID,
+            highScore: highScore,
+            selectedOptionsIDs: selectedOptionsIDs
+        )
     }
 }

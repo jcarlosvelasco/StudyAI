@@ -16,6 +16,8 @@ class QuizPresentableErrorMapper {
                 return "Something went wrong"
             case .tooManyRequests:
                 return "Too many requests. Please try again later."
+            case .databaseError:
+                return "Database error. Please try again later."
         }
     }
 }
